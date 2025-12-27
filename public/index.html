@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema PMOC - Fórum Civil</title>
+    <style>
+        /* Estilos Gerais */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; }
+        
+        /* Menu de Navegação */
+        nav { background: #1a237e; padding: 15px; display: flex; gap: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        nav a { color: white; text-decoration: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        nav a:hover { color: #ffc107; }
+
+        .container { padding: 30px; }
+        .aba { display: none; } 
+        .ativa { display: block; } 
+
+        /* Cabeçalho de Identificação (Logo + Título) */
+        .header-identidade { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            border-bottom: 5px solid #d32f2f; /* Linha vermelha do logo */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .header-identidade img { max-width: 280px; height: auto; }
+        .header-identidade h1 { color: #1a237e; margin-top: 15px; font-size: 26px; text-transform: uppercase; }
+
+        /* Estilo da Tabela */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #1a237e; color: white; font-size: 14px; letter-spacing: 1px; }
+        tr:hover { background-color: #f1f4ff; }
+        
+        /* Botões e Status */
+        .status-pendente { color: #d32f2f; font-weight: bold; }
+        .status-concluido { color: #28a745; font-weight: bold; }
+        
+        button.btn-concluir { 
+            background: white; 
+            border: 2px solid #1a237e; 
+            color: #1a237e; 
+            padding: 6px 12px; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button.btn-concluir:hover { background: #1a237e; color: white; }
+
+        /* Estilo do Formulário de Cadastro */
+        .form-cadastro { background: white; padding: 30px; border-radius: 8px; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 0 auto; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+        .btn-salvar { background: #28a745; color: white; border: none; padding: 15px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
+        .btn-salvar:hover { background: #218838; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a onclick="mostrarAba('home')">📋 CRONOGRAMA</a>
+        <a onclick="mostrarAba('cadastro')">➕ NOVO EQUIPAMENTO</a>
+    </nav>
+
+    <div class="container">
+        
+        <div id="home" class="aba ativa">
+            <div class="header-identidade">
+                <img src="logo.png" alt="Inovar Refrigeração">
+                <h1>Cronograma de Manutenção Preventiva - Fórum Civil</h1>
+            </div>
+
+            <table id="tabela-pmoc">
+                <thead>
+                    <tr>
+                        <th>TAG</th>
+                        <th>LOCAL</th>
+                        <th>APARELHO</th>
+                        <th>DATA</th>
+                        <th>SERVIÇO</th>
+                        <th>STATUS</th>
+                        <th>AÇÃO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="cadastro" class="aba">
+            <div class="header-identidade">
+                <img src="logo.png" alt="Inovar Refrigeração" style="max-width: 150px;">
+                <h1>Cadastrar Novo Equipamento</h1>
+            </div>
+
+            <div class="form-cadastro">
+                <div class="form-group">
+                    <label>TAG Identificação (Ex: CHILLER 01)</label>
+                    <input type="text" id="tag" placeholder="Digite o código do aparelho">
+                </div>
+                <div class="form-group">
+                    <label>Local de Instalação</label>
+                    <input type="text" id="local" placeholder="Ex: Cobertura / Sala de TI">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Equipamento</label>
+                    <select id="tipo">
+                        <option value="CHILLER">CHILLER</option>
+                        <option value="FANCOIL">FANCOIL</option>
+                        <option value="SELF CONTAINED">SELF CONTAINED</option>
+                        <option value="SPLIT">SPLIT</option>
+                        <option value="SPLIT K7">SPLIT K7</option>
+                        <option value="SPLIT PISO TETO">SPLIT PISO TETO</option>
+                        <option value="VRF">VRF</option>
+                    </select>
+                </div>
+                <button class="btn-salvar" onclick="salvarEquipamento()">Salvar e Gerar Manutenções</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Lógica de Troca de Abas
+        function mostrarAba(id) {
+            document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('ativa'));
+            document.getElementById(id).classList.add('ativa');
+            if(id === 'home') carregarTabela();
+        }
+
+        // Busca dados do Servidor (Node.js)
+        function carregarTabela() {
+            fetch('/manutencoes')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector('#tabela-pmoc tbody');
+                    tbody.innerHTML = '';
+                    data.forEach(item => {
+                        const dataFormatada = new Date(item.data).toLocaleDateString('pt-BR');
+                        const concluido = item.status === 'Concluído';
+                        
+                        tbody.innerHTML += `
+                            <tr style="${concluido ? 'background: #fdfdfd; color: #aaa;' : ''}">
+                                <td><b>${item.tag}</b></td>
+                                <td>${item.local}</td>
+                                <td>${item.tipo}</td>
+                                <td>${dataFormatada}</td>
+                                <td>${item.servico}</td>
+                                <td class="${concluido ? 'status-concluido' : 'status-pendente'}">${item.status}</td>
+                                <td>
+                                    ${concluido ? '✅ Finalizado' : `<button class="btn-concluir" onclick="concluir(${item.id})">Concluir</button>`}
+                                </td>
+                            </tr>`;
+                    });
+                });
+        }
+
+        // Envia novo equipamento para o Banco
+        function salvarEquipamento() {
+            const dados = {
+                tag: document.getElementById('tag').value,
+                local: document.getElementById('local').value,
+                tipo: document.getElementById('tipo').value
+            };
+
+            if(!dados.tag || !dados.local) return alert("Preencha todos os campos!");
+
+            fetch('/equipamentos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            }).then(() => {
+                alert("Equipamento salvo! Cronograma trimestral gerado.");
+                document.getElementById('tag').value = '';
+                document.getElementById('local').value = '';
+                mostrarAba('home');
+            });
+        }
+
+        // Marca como concluído no banco
+        function concluir(id) {
+            fetch(`/concluir/${id}`, { method: 'POST' }).then(() => carregarTabela());
+        }
+
+        // Inicia a tabela ao abrir
+        carregarTabela();
+    </script>
+</body>
+</html>
