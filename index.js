@@ -76,10 +76,10 @@ app.post('/equipamentos', async (req, res) => {
   }
 });
 
+/// ---------------------------------------------------------
+// INICIALIZAÇÃO DO SERVIDOR (CORRIGIDO PARA O RENDER)
 // ---------------------------------------------------------
-// INICIALIZAÇÃO DO SERVIDOR
-// ---------------------------------------------------------
-app.listen(port, () => {
-  console.log(`🚀 Servidor rodando em http://localhost:${port}`);
-  console.log(`📡 Conectado ao banco na porta 5433`);
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta: ${PORT}`);
+  console.log(`📡 Conexão com o banco configurada.`);
 });
